@@ -1,0 +1,266 @@
+{
+  "schema": "cmdb.osi/v1",
+  "title": "OSI reference model, layered by operational discipline",
+  "note": "Each OSI layer is split into sub-layers. A sub-layer is the smallest unit a CMDB record can be filed under, and it maps to the team/discipline that owns it in practice.",
+  "layers": [
+    {
+      "num": 1,
+      "id": "physical",
+      "name": "Physical",
+      "discipline": "Facilities & Signal",
+      "color": "#8b5cf6",
+      "summary": "Electrons, photons and air. Nothing here is configurable from a shell, which is exactly why it gets skipped in outages.",
+      "sublayers": [
+        {
+          "id": "l1-copper",
+          "name": "Copper / structured cabling",
+          "discipline": "Cabling",
+          "detail": "Cat5e/6/6a runs, patch panels, keystones, RJ45. 2.5GBase-T and 10GBase-T need Cat6a at full distance.",
+          "standards": ["TIA-568", "802.3bz (2.5/5GBASE-T)", "802.3an (10GBASE-T)"]
+        },
+        {
+          "id": "l1-optics",
+          "name": "Fiber & transceivers",
+          "discipline": "Cabling",
+          "detail": "SFP/SFP+ modules, OM3/OM4 multimode, single-mode LR, DAC cables. Transceiver mismatch is a classic silent failure.",
+          "standards": ["SFF-8472", "802.3ae (10G)", "802.3by (25G)"]
+        },
+        {
+          "id": "l1-rf",
+          "name": "Wireless RF",
+          "discipline": "RF",
+          "detail": "Channels, EIRP, DFS, MIMO chains. Signal quality is a physics problem before it is a config problem.",
+          "standards": ["802.11ax", "802.11be", "FCC part 15"]
+        },
+        {
+          "id": "l1-power",
+          "name": "Power & thermal",
+          "discipline": "Facilities",
+          "detail": "PSU headroom, UPS runtime, PDU circuits, GPU power draw. A 4070 Ti under load changes the thermal budget of the whole room.",
+          "standards": ["ATX 3.0", "80 PLUS", "IEC 60320"]
+        }
+      ]
+    },
+    {
+      "num": 2,
+      "id": "datalink",
+      "name": "Data Link",
+      "discipline": "Switching",
+      "color": "#3b82f6",
+      "summary": "Getting a frame to the next hop on the same wire, and keeping loops out while doing it.",
+      "sublayers": [
+        {
+          "id": "l2-mac",
+          "name": "Addressing & learning",
+          "discipline": "Switching",
+          "detail": "MAC addresses, bridge tables, ARP/NDP caches, MAC ageing timers.",
+          "standards": ["802.1D", "RFC 826 (ARP)"]
+        },
+        {
+          "id": "l2-vlan",
+          "name": "VLAN segmentation",
+          "discipline": "Network Engineering",
+          "detail": "802.1Q tags, access vs trunk ports, native VLAN hygiene, PVID assignment.",
+          "standards": ["802.1Q", "802.1ad (QinQ)"]
+        },
+        {
+          "id": "l2-loop",
+          "name": "Loop prevention",
+          "discipline": "Switching",
+          "detail": "STP/RSTP/MSTP, BPDU guard, portfast edges. Broadcast storms start here.",
+          "standards": ["802.1D", "802.1w", "802.1s"]
+        },
+        {
+          "id": "l2-lag",
+          "name": "Aggregation & discovery",
+          "discipline": "Switching",
+          "detail": "LACP bonds, LLDP/CDP neighbours, MTU consistency across a bond.",
+          "standards": ["802.3ad", "802.1AB"]
+        }
+      ]
+    },
+    {
+      "num": 3,
+      "id": "network",
+      "name": "Network",
+      "discipline": "Routing & Overlay",
+      "color": "#22d3ee",
+      "summary": "Where this box is, how it reaches that box, and which of the three overlapping address spaces you are in.",
+      "sublayers": [
+        {
+          "id": "l3-addressing",
+          "name": "Addressing & subnets",
+          "discipline": "Network Engineering",
+          "detail": "Prefix allocation, DHCP scopes, static reservations, IPv6 RA. Every host also carries a 100.64/10 overlay address.",
+          "standards": ["RFC 1918", "RFC 6598", "RFC 4291"]
+        },
+        {
+          "id": "l3-routing",
+          "name": "Routing & policy",
+          "discipline": "Network Engineering",
+          "detail": "Default gateways, static routes, policy routing, NAT/PAT, firewall rules and ACLs.",
+          "standards": ["RFC 1812", "RFC 3022"]
+        },
+        {
+          "id": "l3-overlay",
+          "name": "Overlay / mesh VPN",
+          "discipline": "Platform",
+          "detail": "WireGuard-based tailnet, node keys, ACL grants, DERP relays vs direct paths, exit nodes.",
+          "standards": ["WireGuard", "RFC 8446 (for control)"]
+        }
+      ]
+    },
+    {
+      "num": 4,
+      "id": "transport",
+      "name": "Transport",
+      "discipline": "Sockets & Ports",
+      "color": "#34d399",
+      "summary": "Ports are the interface between a service and the network team. A CMDB that does not record them is a spreadsheet.",
+      "sublayers": [
+        {
+          "id": "l4-tcp",
+          "name": "TCP",
+          "discipline": "Systems",
+          "detail": "Connection state, window scaling, congestion control, TIME_WAIT exhaustion, keepalives.",
+          "standards": ["RFC 9293"]
+        },
+        {
+          "id": "l4-udp",
+          "name": "UDP & QUIC",
+          "discipline": "Systems",
+          "detail": "Connectionless datagrams, QUIC streams over UDP/443, MTU and PMTUD sensitivity.",
+          "standards": ["RFC 768", "RFC 9000"]
+        },
+        {
+          "id": "l4-ports",
+          "name": "Port registry",
+          "discipline": "Platform",
+          "detail": "Who listens on what, on which interface, loopback vs tailnet vs LAN. The most useful table in any CMDB.",
+          "standards": ["IANA SVR", "RFC 6335"]
+        },
+        {
+          "id": "l4-proxy",
+          "name": "Proxying & LB",
+          "discipline": "Platform",
+          "detail": "Reverse proxies, port forwarders, TLS termination, health checks, upstream pools.",
+          "standards": ["RFC 7230"]
+        }
+      ]
+    },
+    {
+      "num": 5,
+      "id": "session",
+      "name": "Session",
+      "discipline": "Identity & State",
+      "color": "#fbbf24",
+      "summary": "Long-lived relationships: who is logged in, over what, and what happens when it drops.",
+      "sublayers": [
+        {
+          "id": "l5-shell",
+          "name": "Shell & remote sessions",
+          "discipline": "Systems",
+          "detail": "SSH sessions, keys and source restrictions, RDP, serial consoles.",
+          "standards": ["RFC 4253", "RFC 4252"]
+        },
+        {
+          "id": "l5-files",
+          "name": "File sessions",
+          "discipline": "Storage",
+          "detail": "SMB/NFS mounts, credentials caching, reconnect behaviour, oplocks.",
+          "standards": ["SMB 3.1.1", "NFSv4"]
+        },
+        {
+          "id": "l5-auth",
+          "name": "Auth state",
+          "discipline": "Security",
+          "detail": "Bearer tokens, API keys, OAuth device flows, cookie sessions, token expiry and re-auth.",
+          "standards": ["RFC 6749", "RFC 7519"]
+        },
+        {
+          "id": "l5-agent",
+          "name": "Agent & worker state",
+          "discipline": "Platform",
+          "detail": "Run-state machines, leases and heads, heartbeat intervals, drift detection.",
+          "standards": ["custom"]
+        }
+      ]
+    },
+    {
+      "num": 6,
+      "id": "presentation",
+      "name": "Presentation",
+      "discipline": "Encoding & Crypto",
+      "color": "#f472b6",
+      "summary": "How bytes become meaning: charset, compression, serialization, and the TLS that wraps it.",
+      "sublayers": [
+        {
+          "id": "l6-tls",
+          "name": "TLS & certificates",
+          "discipline": "Security",
+          "detail": "Certificate chains, SNI, ALPN, cipher policy, expiry tracking. Tailnet HTTPS uses short-lived certs.",
+          "standards": ["RFC 8446 (TLS 1.3)", "RFC 5280"]
+        },
+        {
+          "id": "l6-serial",
+          "name": "Serialization",
+          "discipline": "Platform",
+          "detail": "JSON, NDJSON for logs, protobuf/gRPC, safetensors headers, GGUF metadata blocks.",
+          "standards": ["RFC 8259", "protobuf"]
+        },
+        {
+          "id": "l6-compress",
+          "name": "Compression & encoding",
+          "discipline": "Platform",
+          "detail": "gzip/zstd, base64 for binary-in-JSON, UTF-8 assumptions, line-ending hazards.",
+          "standards": ["RFC 1952", "RFC 8878"]
+        },
+        {
+          "id": "l6-quant",
+          "name": "Model weight formats",
+          "discipline": "ML Ops",
+          "detail": "fp16 safetensors, GPTQ/AWQ 4-bit, GGUF quant levels (Q4_K_M etc.) — a presentation-layer choice with physical consequences.",
+          "standards": ["safetensors", "GGUF"]
+        }
+      ]
+    },
+    {
+      "num": 7,
+      "id": "application",
+      "name": "Application",
+      "discipline": "Services & Observability",
+      "color": "#f87171",
+      "summary": "The only layer users notice. Everything below exists to make this layer's failures debuggable.",
+      "sublayers": [
+        {
+          "id": "l7-http",
+          "name": "HTTP APIs",
+          "discipline": "Platform",
+          "detail": "REST endpoints, SSE streams, OpenAPI surfaces, auth middleware, rate limits.",
+          "standards": ["RFC 9110", "RFC 9111"]
+        },
+        {
+          "id": "l7-model",
+          "name": "Inference services",
+          "discipline": "ML Ops",
+          "detail": "Ollama and vLLM endpoints, model residency, VRAM budget, context length, token throughput.",
+          "standards": ["Ollama API", "OpenAI-compatible API"]
+        },
+        {
+          "id": "l7-observe",
+          "name": "Observability",
+          "discipline": "SRE",
+          "detail": "Logs to ELK, metrics to Prometheus, dashboards in Grafana, alert routing.",
+          "standards": ["ECS", "OpenMetrics", "OTLP"]
+        },
+        {
+          "id": "l7-agent",
+          "name": "Agent & automation",
+          "discipline": "SRE",
+          "detail": "Hermes workers, cron jobs, run-state transitions, chat bots — things that act without a human.",
+          "standards": ["custom"]
+        }
+      ]
+    }
+  ]
+}

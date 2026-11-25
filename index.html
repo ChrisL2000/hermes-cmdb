@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CMDB · OSI stack</title>
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="scene"></canvas>
+
+  <header class="hud top">
+    <div class="brand">
+      <span class="dot"></span>
+      <strong>CMDB</strong>
+      <span class="muted" id="scope">loading…</span>
+    </div>
+    <div class="tools">
+      <input id="search" type="search" placeholder="filter CIs (port, host, service…)" autocomplete="off">
+      <select id="host-filter"><option value="">all hosts</option></select>
+      <button id="btn-explode" title="Separate layers">explode</button>
+      <button id="btn-spin" class="on" title="Auto-rotate">spin</button>
+      <button id="btn-reset" title="Reset view">reset</button>
+    </div>
+  </header>
+
+  <aside class="hud panel" id="panel">
+    <div id="panel-body">
+      <p class="hint">Click a layer in the stack.<br>Each layer holds its sub-layers; each sub-layer lists the CIs filed under it.</p>
+    </div>
+  </aside>
+
+  <footer class="hud bottom">
+    <div id="legend" class="legend"></div>
+    <div class="muted small" id="meta"></div>
+  </footer>
+
+  <div id="fallback" hidden>
+    <h1>WebGL unavailable</h1>
+    <p>This view needs WebGL. The same data is in <code>data/cmdb.json</code> and <code>data/osi.json</code>.</p>
+  </div>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

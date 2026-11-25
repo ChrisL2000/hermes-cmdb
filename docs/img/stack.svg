@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" role="img" aria-label="Seven OSI layers stacked, each with its discipline">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0e13"/>
+      <stop offset="1" stop-color="#07090c"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="10" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .t { font: 600 22px "Segoe UI", system-ui, sans-serif; fill: #e4ebf3; }
+      .n { font: 700 26px ui-monospace, monospace; }
+      .d { font: 400 15px "Segoe UI", system-ui, sans-serif; fill: #93a3b4; }
+      .s { font: 400 13px "Segoe UI", system-ui, sans-serif; fill: #7d8c9c; }
+      .k { font: 600 13px "Segoe UI", system-ui, sans-serif; fill: #6f7f90; letter-spacing: 2px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="720" fill="url(#bg)"/>
+  <text x="48" y="52" class="k">CMDB · OSI STACK · DISCIPLINE VIEW</text>
+  <text x="48" y="82" class="s">7 layers · 27 sub-layers · 36 configuration items</text>
+
+  <!-- L7 Application -->
+  <g transform="translate(48,104)">
+    <rect width="880" height="72" rx="9" fill="#f87171" fill-opacity="0.13" stroke="#f87171" stroke-opacity="0.75"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#f87171" fill-opacity="0.22"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#f87171">7</text>
+    <text x="70" y="34" class="t">Application</text>
+    <text x="70" y="56" class="d">Services &amp; Observability · 4 sub-layers · 7 CIs</text>
+  </g>
+  <!-- L6 -->
+  <g transform="translate(48,186)">
+    <rect width="880" height="72" rx="9" fill="#f472b6" fill-opacity="0.12" stroke="#f472b6" stroke-opacity="0.7"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#f472b6" fill-opacity="0.2"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#f472b6">6</text>
+    <text x="70" y="34" class="t">Presentation</text>
+    <text x="70" y="56" class="d">Encoding &amp; Crypto · 4 sub-layers · 4 CIs</text>
+  </g>
+  <!-- L5 -->
+  <g transform="translate(48,268)">
+    <rect width="880" height="72" rx="9" fill="#fbbf24" fill-opacity="0.11" stroke="#fbbf24" stroke-opacity="0.68"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#fbbf24" fill-opacity="0.2"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#fbbf24">5</text>
+    <text x="70" y="34" class="t">Session</text>
+    <text x="70" y="56" class="d">Identity &amp; State · 4 sub-layers · 4 CIs</text>
+  </g>
+  <!-- L4 -->
+  <g transform="translate(48,350)">
+    <rect width="880" height="72" rx="9" fill="#34d399" fill-opacity="0.12" stroke="#34d399" stroke-opacity="0.7"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#34d399" fill-opacity="0.2"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#34d399">4</text>
+    <text x="70" y="34" class="t">Transport</text>
+    <text x="70" y="56" class="d">Sockets &amp; Ports · 4 sub-layers · 8 CIs</text>
+  </g>
+  <!-- L3 -->
+  <g transform="translate(48,432)">
+    <rect width="880" height="72" rx="9" fill="#22d3ee" fill-opacity="0.12" stroke="#22d3ee" stroke-opacity="0.7"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#22d3ee" fill-opacity="0.2"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#22d3ee">3</text>
+    <text x="70" y="34" class="t">Network</text>
+    <text x="70" y="56" class="d">Routing &amp; Overlay · 3 sub-layers · 5 CIs</text>
+  </g>
+  <!-- L2 -->
+  <g transform="translate(48,514)">
+    <rect width="880" height="72" rx="9" fill="#3b82f6" fill-opacity="0.13" stroke="#3b82f6" stroke-opacity="0.72"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#3b82f6" fill-opacity="0.22"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#3b82f6">2</text>
+    <text x="70" y="34" class="t">Data Link</text>
+    <text x="70" y="56" class="d">Switching · 4 sub-layers · 3 CIs</text>
+  </g>
+  <!-- L1 -->
+  <g transform="translate(48,596)">
+    <rect width="880" height="72" rx="9" fill="#8b5cf6" fill-opacity="0.13" stroke="#8b5cf6" stroke-opacity="0.72"/>
+    <rect x="14" y="16" width="40" height="40" rx="7" fill="#8b5cf6" fill-opacity="0.22"/>
+    <text x="34" y="44" class="n" text-anchor="middle" fill="#8b5cf6">1</text>
+    <text x="70" y="34" class="t">Physical</text>
+    <text x="70" y="56" class="d">Facilities &amp; Signal · 4 sub-layers · 5 CIs</text>
+  </g>
+
+  <!-- side annotations -->
+  <g>
+    <line x1="960" y1="140" x2="960" y2="632" stroke="#1e2731" stroke-width="1"/>
+    <text x="982" y="150" class="s">one CI, one home:</text>
+    <text x="982" y="172" class="s">a host appears here as</text>
+    <text x="982" y="192" class="s">NIC (L1), listener (L4),</text>
+    <text x="982" y="212" class="s">service (L7).</text>
+    <text x="982" y="252" class="s">file by the fixer,</text>
+    <text x="982" y="272" class="s">not by the packet.</text>
+    <text x="982" y="312" class="s">sub-layer discipline:</text>
+    <text x="982" y="332" class="s">Facilities · Cabling · RF</text>
+    <text x="982" y="352" class="s">Switching · Network Eng.</text>
+    <text x="982" y="372" class="s">Platform · Systems</text>
+    <text x="982" y="392" class="s">Security · SRE · ML Ops</text>
+  </g>
+
+  <text x="48" y="694" class="s">drag to orbit · click a layer to open its sub-layers · search filters CIs and dims empty layers</text>
+</svg>

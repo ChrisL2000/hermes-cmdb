@@ -1,0 +1,112 @@
+{
+  "schema": "cmdb/v1",
+  "generated": "2026-11-25",
+  "scope": "Homelab: two Windows workstations, one Debian service host, one Proxmox node, one Linux bot host, joined by a Tailscale tailnet and a 198.19.x LAN.",
+  "hosts": [
+    {
+      "id": "peeweeherman",
+      "name": "PeeWeeHerman",
+      "role": "Primary workstation / agent host",
+      "os": "Windows 11 Pro 10.0.26300",
+      "cpu_ram": "x64, 63.2 GB",
+      "gpu": "RTX 4070 Ti 12 GB",
+      "lan": "198.19.6.1",
+      "overlay": "100.89.226.42",
+      "state": "running",
+      "notes": "Runs the Hermes agent (docker backend), OBS, Discord, Steam. Hosts the sysmon run-state worker."
+    },
+    {
+      "id": "aireenpc",
+      "name": "AireenPC",
+      "role": "Inference host",
+      "os": "Windows 11 Home 10.0.26300 + WSL2 Ubuntu",
+      "cpu_ram": "x64, 24 GB to WSL",
+      "gpu": "RTX 5070 Ti 16 GB (sm_120)",
+      "lan": "198.19.x",
+      "overlay": "100.111.192.82",
+      "state": "running",
+      "notes": "Docker engine inside WSL2 (no Docker Desktop). Serves Ollama, Open WebUI and a vLLM container on the tailnet."
+    },
+    {
+      "id": "robertdobbs",
+      "name": "RobertDobbs",
+      "role": "Observability host",
+      "os": "Debian 13 (6.12 kernel)",
+      "cpu_ram": "x64",
+      "lan": "198.19.10.26",
+      "overlay": "100.120.245.25",
+      "state": "running",
+      "notes": "Elastic 8.19.24 stack (ES, Kibana, Logstash, Fleet), Grafana/Loki/Prometheus/Alloy, FreeSWITCH."
+    },
+    {
+      "id": "us-hm-proxmox01",
+      "name": "us-hm-proxmox01",
+      "role": "Virtualisation & storage",
+      "os": "Proxmox VE (Linux)",
+      "lan": "198.19.7.20",
+      "overlay": "100.103.125.69",
+      "state": "running",
+      "notes": "Shares /data_pool1 over SMB; hosts VMs. SSH from the workstation is source-restricted."
+    },
+    {
+      "id": "zeppo",
+      "name": "zeppo",
+      "role": "Bot host",
+      "os": "Linux",
+      "overlay": "100.93.126.10",
+      "state": "running",
+      "notes": "Discord bot 'Zeppo' and voice stack."
+    }
+  ],
+  "cis": [
+    {"id": "ci-l1-pw-nic", "name": "PeeWeeHerman Ethernet NIC", "type": "interface", "host": "peeweeherman", "layer": 1, "sublayer": "l1-copper", "address": "198.19.6.1", "state": "up", "notes": "Primary LAN uplink; carries agent, OBS and game traffic."},
+    {"id": "ci-l1-air-nic", "name": "AireenPC Ethernet NIC", "type": "interface", "host": "aireenpc", "layer": 1, "sublayer": "l1-copper", "address": "198.19.x", "state": "up", "notes": "Inference host uplink; model pulls and tailnet transfers traverse it."},
+    {"id": "ci-l1-pw-gpu", "name": "RTX 4070 Ti + PSU budget", "type": "hardware", "host": "peeweeherman", "layer": 1, "sublayer": "l1-power", "state": "ok", "notes": "320 W board power; run-states change sustained draw materially."},
+    {"id": "ci-l1-air-gpu", "name": "RTX 5070 Ti 16 GB", "type": "hardware", "host": "aireenpc", "layer": 1, "sublayer": "l1-power", "state": "ok", "notes": "~15 GB already committed by the resident vLLM model; thermal headroom adequate."},
+    {"id": "ci-l1-wifi", "name": "Wireless AP coverage", "type": "rf", "host": "lab", "layer": 1, "sublayer": "l1-rf", "state": "unknown", "notes": "Not yet surveyed; OpenWrt One radios are the anchor."},
+
+    {"id": "ci-l2-openwrt", "name": "OpenWrt One (MT7981B)", "type": "switch-router", "host": "lab", "layer": 2, "sublayer": "l2-vlan", "address": "198.19.6.x", "state": "running", "notes": "2.5G + 1G ports; planned VLAN trunk gateway between virtual and physical NICs."},
+    {"id": "ci-l2-vlan-lab", "name": "Lab VLAN trunk", "type": "vlan", "host": "lab", "layer": 2, "sublayer": "l2-vlan", "address": "802.1Q", "state": "planned", "notes": "Trunk carrying management, storage and lab segments to the hypervisor."},
+    {"id": "ci-l2-arp", "name": "ARP/NDP caches", "type": "table", "host": "lab", "layer": 2, "sublayer": "l2-mac", "state": "dynamic", "notes": "Duplicates across LAN and overlay; tailnet handles its own neighbour discovery."},
+
+    {"id": "ci-l3-tailnet", "name": "Tailnet 100.64.0.0/10", "type": "overlay-network", "host": "lab", "layer": 3, "sublayer": "l3-overlay", "address": "100.64.0.0/10", "state": "up", "notes": "WireGuard mesh, 14 nodes, direct paths preferred; dobbscloudeast offers an exit node."},
+    {"id": "ci-l3-lan", "name": "LAN 198.19.0.0/16", "type": "subnet", "host": "lab", "layer": 3, "sublayer": "l3-addressing", "address": "198.19.0.0/16", "state": "up", "notes": "Workstations, service host, hypervisor; reachable only from inside."},
+    {"id": "ci-l3-wsl", "name": "WSL2 NAT 172.29.221.0/24", "type": "subnet", "host": "aireenpc", "layer": 3, "sublayer": "l3-addressing", "address": "172.29.221.0/24", "state": "up", "notes": "Container host address space; Windows loopback forwarding bridges it to the host."},
+    {"id": "ci-l3-docker", "name": "Docker bridge 172.17.0.0/16", "type": "subnet", "host": "aireenpc", "layer": 3, "sublayer": "l3-addressing", "address": "172.17.0.0/16", "state": "up", "notes": "Per-compose networks (aireenpc-ollama_default) sit inside this range."},
+    {"id": "ci-l3-routes", "name": "Default route + policy", "type": "route", "host": "lab", "layer": 3, "sublayer": "l3-routing", "state": "up", "notes": "LAN default via 198.19.6.1; tailnet split routes installed by tailscaled."},
+
+    {"id": "ci-l4-ollama", "name": "Ollama API :11434", "type": "listener", "host": "aireenpc", "layer": 4, "sublayer": "l4-ports", "address": "127.0.0.1:11434 -> 100.111.192.82:11434", "state": "up", "notes": "Container port published on loopback, exposed to the tailnet by tailscale serve."},
+    {"id": "ci-l4-webui", "name": "Open WebUI :3000", "type": "listener", "host": "aireenpc", "layer": 4, "sublayer": "l4-ports", "address": "127.0.0.1:3000 -> 100.111.192.82:3000", "state": "up", "notes": "Chat UI; auth disabled, tailnet-only exposure."},
+    {"id": "ci-l4-vllm", "name": "vLLM qwen2.5-7b :8080", "type": "listener", "host": "aireenpc", "layer": 4, "sublayer": "l4-ports", "address": "127.0.0.1:8080", "state": "up", "notes": "Holds ~14.9 GB VRAM; must be stopped before ollama can load a 7B."},
+    {"id": "ci-l4-sysmon", "name": "sysmon worker :8765", "type": "listener", "host": "peeweeherman", "layer": 4, "sublayer": "l4-ports", "address": "127.0.0.1:8765 + 100.89.226.42:8765", "state": "up", "notes": "Run-state API, SSE stream, Prometheus metrics; bearer token off loopback."},
+    {"id": "ci-l4-serve", "name": "tailscale serve proxies", "type": "proxy", "host": "aireenpc", "layer": 4, "sublayer": "l4-proxy", "address": "100.111.192.82:3000, :11434", "state": "up", "notes": "No admin rights needed: proxies Windows loopback to the tailnet address."},
+    {"id": "ci-l4-ssh", "name": "SSH :22", "type": "listener", "host": "lab", "layer": 4, "sublayer": "l4-ports", "address": "22/tcp", "state": "up", "notes": "Key-only; the hermes key is source-restricted on the Proxmox host."},
+    {"id": "ci-l4-smb", "name": "SMB :445", "type": "listener", "host": "us-hm-proxmox01", "layer": 4, "sublayer": "l4-ports", "address": "445/tcp", "state": "up", "notes": "Q: maps \\\\198.19.7.20\\edrive; a bots share is planned for agent heads and logs."},
+    {"id": "ci-l4-es", "name": "Elasticsearch :9200", "type": "listener", "host": "robertdobbs", "layer": 4, "sublayer": "l4-ports", "address": "127.0.0.1:9200", "state": "degraded", "notes": "Localhost-only with security on; container reports unhealthy. Nothing indexes directly."},
+
+    {"id": "ci-l5-ssh-sess", "name": "Agent SSH sessions", "type": "session", "host": "lab", "layer": 5, "sublayer": "l5-shell", "state": "active", "notes": "Non-interactive, no elevation channel; every remote action is a single command."},
+    {"id": "ci-l5-smb-sess", "name": "SMB session to Q:", "type": "session", "host": "peeweeherman", "layer": 5, "sublayer": "l5-files", "state": "degraded", "notes": "Remembered connection; bot/log shares fail with WinError 1326 until created."},
+    {"id": "ci-l5-token", "name": "sysmon bearer token", "type": "secret", "host": "peeweeherman", "layer": 5, "sublayer": "l5-auth", "state": "active", "notes": "Stored at %LOCALAPPDATA%\\hermes-sysmon\\api_token.txt; only its SHA-256 prefix leaves the box in the head record."},
+    {"id": "ci-l5-head", "name": "sysmon.head/v1 record", "type": "state", "host": "peeweeherman", "layer": 5, "sublayer": "l5-agent", "state": "active", "notes": "Heartbeat every 30 s; local copy always written, SMB rendezvous pending the share."},
+
+    {"id": "ci-l6-tls", "name": "Tailnet HTTPS / certs", "type": "tls", "host": "lab", "layer": 6, "sublayer": "l6-tls", "state": "ok", "notes": "Serve currently plain HTTP on the tailnet; HTTPS available when a cert is issued."},
+    {"id": "ci-l6-ndjson", "name": "sysmon JSONL logs", "type": "logging-format", "host": "peeweeherman", "layer": 6, "sublayer": "l6-serial", "state": "active", "notes": "ECS-flavoured NDJSON: @timestamp, event.kind, log.level, host.name, agent.id."},
+    {"id": "ci-l6-gguf", "name": "GGUF weights (Q4_K_M / Q4_0)", "type": "model-format", "host": "aireenpc", "layer": 6, "sublayer": "l6-quant", "state": "active", "notes": "llama3.2:3b, qwen2.5-coder:7b, mistral-7b, dolphin-2.2.1 resident; a converted Q4_K_M in progress."},
+    {"id": "ci-l6-safetensors", "name": "fp16 safetensors (source weights)", "type": "model-format", "host": "peeweeherman", "layer": 6, "sublayer": "l6-quant", "state": "archived", "notes": "13.5 GB fp16 original of dolphin-2.2.1-AshhLimaRP used for the GGUF conversion."},
+
+    {"id": "ci-l7-ollama", "name": "Ollama 0.40.18", "type": "service", "host": "aireenpc", "layer": 7, "sublayer": "l7-model", "state": "up", "notes": "GPU-backed; embeddings served from nomic-embed-text at 100% GPU."},
+    {"id": "ci-l7-webui", "name": "Open WebUI 0.13.5", "type": "web-app", "host": "aireenpc", "layer": 7, "sublayer": "l7-http", "state": "up", "notes": "Model picker and chat over the Ollama backend."},
+    {"id": "ci-l7-elk", "name": "Elastic Stack 8.19.24", "type": "observability", "host": "robertdobbs", "layer": 7, "sublayer": "l7-observe", "state": "degraded", "notes": "Kibana and Fleet reachable; ES unhealthy and localhost-bound — shipping path is Logstash or an Agent."},
+    {"id": "ci-l7-grafana", "name": "Grafana 13.2.5", "type": "observability", "host": "robertdobbs", "layer": 7, "sublayer": "l7-observe", "state": "up", "notes": "Dashboards over Prometheus/Loki; the natural wall for agent status links."},
+    {"id": "ci-l7-sysmon", "name": "hermes-win11-ops:sysmon", "type": "agent", "host": "peeweeherman", "layer": 7, "sublayer": "l7-agent", "state": "up", "notes": "Run-state worker: manifests, gates, read-back verify, STOP, live dashboard."},
+    {"id": "ci-l7-hermes", "name": "Hermes agent", "type": "agent", "host": "peeweeherman", "layer": 7, "sublayer": "l7-agent", "state": "up", "notes": "Docker-backed assistant; also drives deploys like this CMDB."},
+    {"id": "ci-l7-zeppo", "name": "Zeppo Discord bot", "type": "bot", "host": "zeppo", "layer": 7, "sublayer": "l7-agent", "state": "up", "notes": "Locked to a single Discord user; voice variant pending."}
+  ],
+  "links": [
+    {"from": "peeweeherman", "to": "us-hm-proxmox01", "kind": "smb", "detail": "Q: -> \\\\198.19.7.20\\edrive"},
+    {"from": "peeweeherman", "to": "aireenpc", "kind": "ssh+tailnet", "detail": "agent drives WSL docker"},
+    {"from": "aireenpc", "to": "robertdobbs", "kind": "logs", "detail": "planned NDJSON -> Logstash http"},
+    {"from": "peeweeherman", "to": "robertdobbs", "kind": "http", "detail": "Kibana :5601, Grafana :3000"},
+    {"from": "zeppo", "to": "peeweeherman", "kind": "agent", "detail": "bot ops"}
+  ]
+}
